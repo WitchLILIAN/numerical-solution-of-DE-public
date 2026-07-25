@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>微分方程数值解考前复习讲义</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --ink: #17202a;
+      --muted: #5d6673;
+      --line: #d9dee7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent2: #b45309;
+      --blue: #2457a6;
+      --danger: #b42318;
+      --soft: #edf7f5;
+      --warn: #fff7ed;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 22px 18px;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+    }
+    nav h1 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+    nav .small { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+    nav a {
+      display: block;
+      padding: 7px 8px;
+      color: #263241;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    nav a:hover { background: var(--soft); color: var(--accent); }
+    main { padding: 30px 34px 60px; max-width: 1180px; }
+    header {
+      padding: 26px 28px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    header h2 { margin: 0 0 8px; font-size: 30px; line-height: 1.2; }
+    header p { margin: 6px 0; color: var(--muted); }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px 26px;
+      margin: 18px 0;
+    }
+    h2 { margin: 0 0 16px; font-size: 24px; }
+    h3 { margin: 22px 0 10px; font-size: 18px; }
+    h4 { margin: 18px 0 8px; font-size: 15px; color: var(--blue); }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+      background: #fff;
+    }
+    .box.key { background: var(--soft); border-color: #b8ded8; }
+    .box.warn { background: var(--warn); border-color: #fed7aa; }
+    .box.danger { background: #fff1f2; border-color: #fecdd3; }
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #e6f4f1;
+      color: #075e56;
+      font-size: 12px;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      vertical-align: top;
+    }
+    th { background: #f1f5f9; text-align: left; }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    code { background: #eef2f7; padding: 1px 4px; border-radius: 4px; }
+    pre {
+      margin: 10px 0;
+      padding: 12px 14px;
+      background: var(--code);
+      color: #f8fafc;
+      border-radius: 8px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .formula {
+      background: #f8fafc;
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      margin: 9px 0;
+      overflow-x: auto;
+      font-family: "STIX Two Math", "Cambria Math", "Times New Roman", "Noto Serif CJK SC", serif;
+      white-space: normal;
+      font-size: 17px;
+      line-height: 1.9;
+    }
+    .mathline { display: block; margin: 3px 0; }
+    .mathlabel {
+      display: inline-block;
+      min-width: 5.5em;
+      color: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+    }
+    .frac {
+      display: inline-grid;
+      grid-template-rows: auto auto;
+      align-items: center;
+      justify-items: center;
+      vertical-align: middle;
+      margin: 0 2px;
+      line-height: 1.25;
+    }
+    .frac > span:first-child {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 4px 1px;
+    }
+    .frac > span:last-child { padding-top: 1px; }
+    .matrix-wrap {
+      display: inline-flex;
+      align-items: stretch;
+      gap: 6px;
+      vertical-align: middle;
+      margin: 4px 0;
+    }
+    .bracket {
+      display: flex;
+      align-items: center;
+      font-size: 44px;
+      line-height: 1;
+      color: #334155;
+    }
+    table.matrix {
+      width: auto;
+      border-collapse: collapse;
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 15px;
+    }
+    table.matrix td {
+      border: 0;
+      padding: 2px 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .formula .note {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 14px;
+    }
+    .score {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .score div {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .score strong { display: block; font-size: 20px; color: var(--accent); }
+    details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      background: #fff;
+    }
+    summary { cursor: pointer; font-weight: 700; }
+    .checklist li { margin: 6px 0; }
+    .topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 0;
+    }
+    .muted { color: var(--muted); }
+    .dangerText { color: var(--danger); font-weight: 700; }
+    .kbd {
+      border: 1px solid #cbd5e1;
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 5px;
+      background: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+    @media (max-width: 900px) {
+      .layout { display: block; }
+      nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      main { padding: 18px 14px 40px; }
+      .grid.two, .grid.three, .score { grid-template-columns: 1fr; }
+      header h2 { font-size: 24px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .layout { display: block; }
+      nav { display: none; }
+      main { max-width: none; padding: 0; }
+      section, header { break-inside: avoid; border-color: #bbb; }
+      details { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <h1>微分方程数值解<br>考前复习讲义</h1>
+  <div class="small">按老师权重：第3章 40 分；第2/4/5章各 20 分。</div>
+  <a href="#universal">1. 通用判题模板</a>
+  <a href="#chap2">2. 第2章 1D BVP</a>
+  <a href="#chap3">3. 第3章 2D Elliptic</a>
+  <a href="#chap4">4. 第4章 Parabolic</a>
+  <a href="#chap5">5. 第5章 Hyperbolic</a>
+  <a href="#code">6. 编程填空高频行</a>
+  <a href="#proofs">7. 证明题答题骨架</a>
+  <a href="#drill">8. 考前速背清单</a>
+  <a href="#sources">来源</a>
+</nav>
+
+<main>
+<header>
+  <h2>微分方程数值解考前复习讲义</h2>
+  <div class="score">
+    <div><strong>20</strong>第2章：1D BVP、差分公式、ghost point、Newton</div>
+    <div><strong>40</strong>第3章：Poisson 矩阵、Neumann、Jacobi/GS/SOR</div>
+    <div><strong>20</strong>第4章：Euler/CN/MOL/ADI、稳定性</div>
+    <div><strong>20</strong>第5章：upwind/LF/LW、CFL、NBC</div>
+  </div>
+  <div class="topline">
+    <span class="tag">判断题</span><span class="tag">证明题</span><span class="tag">矩阵 A</span><span class="tag">代码填空</span><span class="tag">作业 1-4 对齐</span>
+  </div>
+</header>
+
+<section id="universal">
+  <h2>1. 通用判题模板</h2>
+  <table>
+    <tr><th>题型</th><th>标准写法</th><th>最容易丢分处</th></tr>
+    <tr>
+      <td>Consistency</td>
+      <td>把 exact solution u 代入差分算子 P_h，算 T = P_h u - P u。若 T -> 0，则 consistent；若 T = O(h<sup>p</sup> + k<sup>q</sup>)，就是 p 阶空间、q 阶时间。</td>
+      <td>不要把数值解 U 代进去；local truncation error 用 exact u。</td>
+    </tr>
+    <tr>
+      <td>Stability</td>
+      <td>时间格式：Fourier mode e^{iθj} 得增长因子 G(θ)，要求 sup_θ |G| <= 1。迭代格式：误差迭代 e<sup>r+1</sup>=B e<sup>r</sup>，要求 ρ(B)&lt;1。</td>
+      <td>FTCS 对 advection 是不稳定；FTCS 对 heat 只有 μ ≤ 1/2 稳定。</td>
+    </tr>
+    <tr>
+      <td>Convergence</td>
+      <td>误差 = 稳定放大常数 × 截断误差。线性初边值问题可写 consistent + stable => convergent。</td>
+      <td>不能只说 consistent 就 convergent；还要 stable。</td>
+    </tr>
+    <tr>
+      <td>Matrix A</td>
+      <td>先定 unknown ordering，再写 interior stencil，最后改边界行/RHS。自然排序常用 L = i + (m-1)(j-1)。</td>
+      <td>Neumann 不只是 RHS 变，ghost point 会把相邻系数从 1 改成 2。</td>
+    </tr>
+  </table>
+</section>
+
+<section id="chap2">
+  <h2>2. 第2章：1D Boundary Value Problems</h2>
+  <div class="grid two">
+    <div class="box">
+      <h3>核心公式</h3>
+      <div class="formula">
+  <span class="mathline">u′(x<sub>i</sub>) ≈ <span class="frac"><span>u<sub>i+1</sub> - u<sub>i</sub></span><span>h</span></span> = O(h)</span>
+  <span class="mathline">u′(x<sub>i</sub>) ≈ <span class="frac"><span>u<sub>i</sub> - u<sub>i-1</sub></span><span>h</span></span> = O(h)</span>
+  <span class="mathline">u′(x<sub>i</sub>) ≈ <span class="frac"><span>u<sub>i+1</sub> - u<sub>i-1</sub></span><span>2h</span></span> = O(h<sup>2</sup>)</span>
+  <span class="mathline">u″(x<sub>i</sub>) ≈ <span class="frac"><span>u<sub>i-1</sub> - 2u<sub>i</sub> + u<sub>i+1</sub></span><span>h<sup>2</sup></span></span> = O(h<sup>2</sup>)</span>
+</div>
+      <p><b>三对角 BVP：</b>对 u'' = f，Dirichlet 边界 u(a)=α, u(b)=β：</p>
+      <div class="formula">
+  <span class="mathline">A = <span class="frac"><span>1</span><span>h<sup>2</sup></span></span> tridiag(1, -2, 1)</span>
+  <span class="mathline">F<sub>1</sub> = f<sub>1</sub> - <span class="frac"><span>α</span><span>h<sup>2</sup></span></span></span>
+  <span class="mathline">F<sub>n-1</sub> = f<sub>n-1</sub> - <span class="frac"><span>β</span><span>h<sup>2</sup></span></span></span>
+</div>
+      <p>若是 u'' - K u = f，则主对角变为 <code>-2/h<sup>2</sup> - K</code>。</p>
+    </div>
+    <div class="box">
+      <h3>非均匀网格三点公式</h3>
+      <p>点为 x-h1, x, x+h2，H=h1+h2。</p>
+      <div class="formula">
+  <span class="mathline">u′(x) ≈ -<span class="frac"><span>h<sub>2</sub></span><span>h<sub>1</sub>H</span></span>u(x-h<sub>1</sub>)
+  + <span class="frac"><span>h<sub>2</sub>-h<sub>1</sub></span><span>h<sub>1</sub>h<sub>2</sub></span></span>u(x)
+  + <span class="frac"><span>h<sub>1</sub></span><span>h<sub>2</sub>H</span></span>u(x+h<sub>2</sub>)</span>
+  <span class="note">误差主项 = (h<sub>1</sub>h<sub>2</sub>/6)u‴(x)，当 h<sub>1</sub>,h<sub>2</sub> 同量级时为 O(h<sup>2</sup>)。</span>
+</div>
+      <div class="formula">
+  <span class="mathline">u″(x) ≈ <span class="frac"><span>2</span><span>h<sub>1</sub>H</span></span>u(x-h<sub>1</sub>)
+  - <span class="frac"><span>2</span><span>h<sub>1</sub>h<sub>2</sub></span></span>u(x)
+  + <span class="frac"><span>2</span><span>h<sub>2</sub>H</span></span>u(x+h<sub>2</sub>)</span>
+  <span class="note">误差主项 = ((h<sub>2</sub>-h<sub>1</sub>)/3)u‴(x)+O(h<sup>2</sup>)。一般非均匀是一阶；h<sub>1</sub>=h<sub>2</sub> 时退化为二阶。</span>
+</div>
+      <p><b>三点不能一致逼近 u'''</b>：要同时消掉 u、u'、u'' 并保留 u'''，至少需要 4 个独立条件，三点系数不够。</p>
+    </div>
+  </div>
+
+  <h3>Ghost point 方法</h3>
+  <p>若右端 Neumann：u'(b)=g，unknown 包含 U_n≈u(b)。中心差分边界：</p>
+  <div class="formula">
+  <span class="mathline"><span class="frac"><span>U<sub>n+1</sub>-U<sub>n-1</sub></span><span>2h</span></span> = g
+  &nbsp;⇒&nbsp; U<sub>n+1</sub> = U<sub>n-1</sub> + 2hg</span>
+</div>
+  <p>代入最后一个二阶方程：</p>
+  <div class="formula">
+  <span class="mathline"><span class="frac"><span>U<sub>n-1</sub>-2U<sub>n</sub>+U<sub>n+1</sub></span><span>h<sup>2</sup></span></span> = f<sub>n</sub></span>
+  <span class="mathline">⇒ <span class="frac"><span>2U<sub>n-1</sub>-2U<sub>n</sub></span><span>h<sup>2</sup></span></span> = f<sub>n</sub> - <span class="frac"><span>2g</span><span>h</span></span></span>
+  <span class="note">最后一行：A(n,n-1)=2/h<sup>2</sup>，A(n,n)=-2/h<sup>2</sup>，F(n)=f<sub>n</sub>-2g/h。</span>
+</div>
+
+  <h3>周期边界矩阵</h3>
+  <p>对 u''(x)-q(x)u=f，u(a)=u(b)，令 unknown 为 U_1,...,U_n，且 U_0=U_n, U_{n+1}=U_1。矩阵是 cyclic tridiagonal，不是普通三对角：</p>
+  <div class="formula">
+  <span class="mathline">A<sub>i,i</sub> = -<span class="frac"><span>2</span><span>h<sup>2</sup></span></span> - q<sub>i</sub></span>
+  <span class="mathline">A<sub>i,i-1</sub> = A<sub>i,i+1</sub> = <span class="frac"><span>1</span><span>h<sup>2</sup></span></span></span>
+  <span class="note">周期边界额外角元素：A<sub>1,n</sub>=1/h<sup>2</sup>，A<sub>n,1</sub>=1/h<sup>2</sup>。</span>
+</div>
+
+  <details>
+    <summary>Newton 非线性 BVP 代码思路</summary>
+    <p>对 F(U)=0：先用差分写每个 residual R_i，再写 Jacobian J_ij = ∂R_i/∂U_j，迭代解 <code>J delta = -R</code>，更新 <code>U = U + delta</code>，直到 <code>max(abs(delta))</code> 或相邻迭代差小于 tol。</p>
+    <pre>while err &gt; tol
+  build R(U)
+  build jacobian J(U)
+  delta = -J \ R;
+  Unew = U + delta;
+  err = max(abs(Unew-U));
+  U = Unew;
+end</pre>
+  </details>
+</section>
+
+<section id="chap3">
+  <h2>3. 第3章：2D Elliptic PDEs（40分主战场）</h2>
+  <div class="box key">
+    <h3>Poisson 五点格式</h3>
+    <div class="formula">
+  <span class="mathline">
+    <span class="frac"><span>U<sub>i-1,j</sub> - 2U<sub>i,j</sub> + U<sub>i+1,j</sub></span><span>h<sub>x</sub><sup>2</sup></span></span>
+    +
+    <span class="frac"><span>U<sub>i,j-1</sub> - 2U<sub>i,j</sub> + U<sub>i,j+1</sub></span><span>h<sub>y</sub><sup>2</sup></span></span>
+    = f<sub>i,j</sub>
+  </span>
+</div>
+    <p>若 h_x=h_y=h：<code>U<sub>left</sub> + U<sub>right</sub> + U<sub>down</sub> + U<sub>up</sub> - 4U<sub>center</sub> = h<sup>2</sup>f</code>。</p>
+  </div>
+
+  <h3>自然排序与矩阵 A</h3>
+  <p>矩形 Dirichlet 内点 unknown：i=1,...,m-1，j=1,...,n-1。自然排序：</p>
+  <div class="formula"><span class="mathline">L = i + (m-1)(j-1)</span></div>
+  <p>矩阵是 block tridiagonal：</p>
+  <div class="formula">
+  <span class="mathline">A = <span class="frac"><span>1</span><span>h<sup>2</sup></span></span>
+  <span class="matrix-wrap"><span class="bracket">[</span><table class="matrix">
+    <tr><td>T</td><td>I</td><td></td><td>0</td></tr>
+    <tr><td>I</td><td>T</td><td>I</td><td></td></tr>
+    <tr><td></td><td>⋱</td><td>⋱</td><td>⋱</td></tr>
+    <tr><td>0</td><td></td><td>I</td><td>T</td></tr>
+  </table><span class="bracket">]</span></span></span>
+  <span class="mathline">T = tridiag(1, -4, 1)（当 h<sub>x</sub>=h<sub>y</sub>=h）</span>
+</div>
+  <p>边界值不进 unknown，而是移到 RHS。例如左边界 u(0,y<sub>j</sub>) 已知，则 F<sub>L</sub> 减去该边界值 / h^2。</p>
+
+  <h3>Assignment 2 高频：m=n=3，右边 Neumann ghost point</h3>
+  <p>Dirichlet 在 x=0,y=0,y=1；Neumann 在 x=1：u_x=g(y)。unknown 可取：</p>
+  <div class="formula"><span class="mathline">X = [U<sub>1,1</sub>, U<sub>2,1</sub>, U<sub>3,1</sub>, U<sub>1,2</sub>, U<sub>2,2</sub>, U<sub>3,2</sub>]<sup>T</sup></span></div>
+  <p>忽略 RHS 边界项，只看系数矩阵（整体再乘 1/h^2）：</p>
+  <div class="formula">
+  <span class="mathline">A = <span class="frac"><span>1</span><span>h<sup>2</sup></span></span>
+  <span class="matrix-wrap"><span class="bracket">[</span><table class="matrix">
+    <tr><td>-4</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+    <tr><td>1</td><td>-4</td><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+    <tr><td>0</td><td>2</td><td>-4</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td>1</td><td>0</td><td>0</td><td>-4</td><td>1</td><td>0</td></tr>
+    <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>-4</td><td>1</td></tr>
+    <tr><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td>-4</td></tr>
+  </table><span class="bracket">]</span></span></span>
+</div>
+  <p>右边 Neumann 的两行出现 <code>2</code>，因为 ghost relation <code>U<sub>4,j</sub>=U<sub>2,j</sub>+2hg<sub>j</sub></code>。对应 RHS 要多减 <code>2hg<sub>j</sub>/h<sup>2</sup> = 2g<sub>j</sub>/h</code>，并减去上下 Dirichlet 边界项。</p>
+
+  <h3>Jacobi / Gauss-Seidel / SOR</h3>
+  <table>
+    <tr><th>方法</th><th>更新式（Poisson, h_x=h_y）</th><th>特点</th></tr>
+    <tr>
+      <td>Jacobi</td>
+      <td>U<sup>new</sup><sub>i,j</sub> = 0.25(U<sup>old</sup><sub>i-1,j</sub>+U<sup>old</sup><sub>i+1,j</sub>+U<sup>old</sup><sub>i,j-1</sub>+U<sup>old</sup><sub>i,j+1</sub>-h<sup>2</sup>f<sub>i,j</sub>)</td>
+      <td>全用旧值；慢但好写。</td>
+    </tr>
+    <tr>
+      <td>Gauss-Seidel</td>
+      <td>同一公式，但按循环顺序立刻使用已更新的新值。</td>
+      <td>比 Jacobi 快；代码里左/下常是新值，右/上仍是旧值。</td>
+    </tr>
+    <tr>
+      <td>SOR</td>
+      <td>U = (1-ω)U<sup>old</sup> + ωU<sup>GS</sup>，0&lt;ω&lt;2</td>
+      <td>ω=1 是 GS；Poisson 常取 1&lt;ω&lt;2，最优值需测试或近似。</td>
+    </tr>
+  </table>
+  <div class="formula">
+  <span class="mathline">收敛判据：max(max(|U<sup>new</sup>-U<sup>old</sup>|)) &lt; tol</span>
+  <span class="mathline">误差检查：max(max(|U<sup>numeric</sup>-U<sup>exact</sup>|))</span>
+</div>
+
+  <h3>最大值原理与误差</h3>
+  <p>如果离散 Laplacian 满足离散最大值原理，则误差 e 满足 A e = τ，边界 e=0。用稳定性/最大值原理可得 ||e||∞ ≤ C||τ||∞，若 τ=O(h<sup>2</sup>)，则全局二阶收敛。</p>
+</section>
+
+<section id="chap4">
+  <h2>4. 第4章：Parabolic PDEs</h2>
+  <h3>1D heat equation：u<sub>t</sub> = βu<sub>xx</sub> + f</h3>
+  <table>
+    <tr><th>格式</th><th>scheme</th><th>精度</th><th>稳定性</th></tr>
+    <tr>
+      <td>Forward Euler</td>
+      <td>U<sub>i</sub><sup>n+1</sup>=U<sub>i</sub><sup>n</sup>+μ(U<sub>i-1</sub><sup>n</sup>-2U<sub>i</sub><sup>n</sup>+U<sub>i+1</sub><sup>n</sup>)+kf<sub>i</sub><sup>n</sup></td>
+      <td>O(k+h<sup>2</sup>)</td>
+      <td>β&gt;0 时 μ=βk/h<sup>2</sup> ≤ 1/2</td>
+    </tr>
+    <tr>
+      <td>Backward Euler</td>
+      <td>-μU<sub>i-1</sub><sup>n+1</sup>+(1+2μ)U<sub>i</sub><sup>n+1</sup>-μU<sub>i+1</sub><sup>n+1</sup>=U<sub>i</sub><sup>n</sup>+kf<sub>i</sub><sup>n+1</sup></td>
+      <td>O(k+h<sup>2</sup>)</td>
+      <td>无条件稳定</td>
+    </tr>
+    <tr>
+      <td>Crank-Nicolson</td>
+      <td>(I-kL/2)U<sup>n+1</sup>=(I+kL/2)U<sup>n</sup>+k(f<sup>n+1</sup>+f<sup>n</sup>)/2</td>
+      <td>O(k<sup>2</sup>+h<sup>2</sup>)</td>
+      <td>线性 heat 无条件稳定</td>
+    </tr>
+    <tr>
+      <td>MOL</td>
+      <td>空间先离散成 dU/dt = A U + F(t)，再用 ode15s/ode23s</td>
+      <td>看空间和 ODE solver</td>
+      <td>热方程半离散通常 stiff</td>
+    </tr>
+  </table>
+
+  <h3>Assignment 3 Q1 模板</h3>
+  <p>给定 scheme：</p>
+  <div class="formula">
+  <span class="mathline">U<sub>i</sub><sup>k+1</sup> = αU<sub>i</sub><sup>k</sup> + <span class="frac"><span>1-α</span><span>2</span></span>(U<sub>i+1</sub><sup>k</sup>+U<sub>i-1</sub><sup>k</sup>)</span>
+  <span class="mathline">α = 1 - 2βμ，μ = <span class="frac"><span>Δt</span><span>h<sup>2</sup></span></span></span>
+</div>
+  <p>代入 α 后：</p>
+  <div class="formula"><span class="mathline">U<sub>i</sub><sup>k+1</sup> = U<sub>i</sub><sup>k</sup> + βΔt<span class="frac"><span>U<sub>i-1</sub><sup>k</sup>-2U<sub>i</sub><sup>k</sup>+U<sub>i+1</sub><sup>k</sup></span><span>h<sup>2</sup></span></span></span></div>
+  <p>这就是 Forward Euler + central second derivative，所以 consistent，local truncation error <code>O(Δt+h<sup>2</sup>)</code>。</p>
+
+  <h3>CN 稳定性证明一句话版</h3>
+  <div class="formula">
+  <span class="mathline">令离散 Laplacian 的特征值 λ ≤ 0。</span>
+  <span class="mathline">CN 增长因子：R(λ)=<span class="frac"><span>1+βkλ/2</span><span>1-βkλ/2</span></span></span>
+  <span class="mathline">因为 λ≤0，所以 |R(λ)|≤1，对任意 k,h 成立 ⇒ unconditionally stable。</span>
+</div>
+  <p>若多了中心差分 advection：L = βδ_xx + aδ_x，Fourier 符号 λ(θ)= -4βsin<sup>2</sup>(θ/2)/h<sup>2</sup> + iasinθ/h，实部仍 <=0，CN 的 <code>|(1+kλ/2)/(1-kλ/2)|<=1</code>，仍稳定。</p>
+
+  <h3>2D CN 与 ADI</h3>
+  <div class="formula">
+  <span class="mathline"><b>2D CN:</b></span>
+  <span class="mathline"><span class="frac"><span>U<sup>n+1</sup>-U<sup>n</sup></span><span>k</span></span>
+  = <span class="frac"><span>1</span><span>2</span></span>(Δ<sub>h</sub>U<sup>n+1</sup>+Δ<sub>h</sub>U<sup>n</sup>)
+  + <span class="frac"><span>1</span><span>2</span></span>(f<sup>n+1</sup>+f<sup>n</sup>)</span>
+  <span class="note">精度 O(k<sup>2</sup>+h<sup>2</sup>)；线性问题无条件稳定，但矩阵是 block tridiagonal。</span>
+</div>
+  <div class="formula">
+  <span class="mathline"><b>ADI 两步：</b></span>
+  <span class="mathline"><span class="frac"><span>U<sup>n+1/2</sup>-U<sup>n</sup></span><span>k/2</span></span>
+  = δ<sub>xx</sub>U<sup>n+1/2</sup> + δ<sub>yy</sub>U<sup>n</sup> + f<sup>n+1/2</sup></span>
+  <span class="mathline"><span class="frac"><span>U<sup>n+1</sup>-U<sup>n+1/2</sup></span><span>k/2</span></span>
+  = δ<sub>xx</sub>U<sup>n+1/2</sup> + δ<sub>yy</sub>U<sup>n+1</sup> + f<sup>n+1/2</sup></span>
+</div>
+  <p>ADI 的考试关键词：每半步只解一批三对角系统；比 2D CN 直接解大矩阵便宜；线性 heat 无条件稳定；作业 exact solution <code>e^{-t} sin x cos y</code> 对应 <code>f=e^{-t} sin x cos y</code>，因为 u<sub>t</sub>=-u 且 u<sub>xx</sub>+u<sub>yy</sub>=-2u。</p>
+</section>
+
+<section id="chap5">
+  <h2>5. 第5章：Hyperbolic PDEs</h2>
+  <h3>一阶 advection：u<sub>t</sub> + au<sub>x</sub> = 0</h3>
+  <p>特征线：<code>x - a t = const</code>。若 a&gt;0，信息从左向右，左边界是 inflow，需要给 u(0,t)；右边界是 outflow，通常不应强加物理边界，但某些中心型格式需要 numerical boundary condition。</p>
+  <table>
+    <tr><th>格式</th><th>更新式，ν=ak/h</th><th>精度</th><th>稳定性</th></tr>
+    <tr>
+      <td>FTCS</td>
+      <td>U<sub>j</sub><sup>n+1</sup>=U<sub>j</sub><sup>n</sup>-(ν/2)(U<sub>j+1</sub><sup>n</sup>-U<sub>j-1</sub><sup>n</sup>)</td>
+      <td>O(k+h<sup>2</sup>)</td>
+      <td class="dangerText">无条件不稳定</td>
+    </tr>
+    <tr>
+      <td>Upwind, a&gt;0</td>
+      <td>U<sub>j</sub><sup>n+1</sup>=U<sub>j</sub><sup>n</sup>-ν(U<sub>j</sub><sup>n</sup>-U<sub>j-1</sub><sup>n</sup>)</td>
+      <td>O(k+h)</td>
+      <td>0 ≤ ν ≤ 1</td>
+    </tr>
+    <tr>
+      <td>Lax-Friedrichs</td>
+      <td>U<sub>j</sub><sup>n+1</sup>=0.5(U<sub>j+1</sub><sup>n</sup>+U<sub>j-1</sub><sup>n</sup>)-(ν/2)(U<sub>j+1</sub><sup>n</sup>-U<sub>j-1</sub><sup>n</sup>)</td>
+      <td>O(k+h) when k~h</td>
+      <td>|ν| ≤ 1</td>
+    </tr>
+    <tr>
+      <td>Lax-Wendroff</td>
+      <td>U<sub>j</sub><sup>n+1</sup>=U<sub>j</sub><sup>n</sup>-(ν/2)(U<sub>j+1</sub><sup>n</sup>-U<sub>j-1</sub><sup>n</sup>) + (ν^2/2)(U_{j+1}^n-2U_j^n+U_{j-1}^n)</td>
+      <td>O(k<sup>2</sup>+h<sup>2</sup>)</td>
+      <td>|ν| ≤ 1</td>
+    </tr>
+  </table>
+
+  <h3>Numerical Boundary Condition</h3>
+  <div class="formula">
+  <span class="mathline"><span class="mathlabel">一阶外推</span> U<sub>M</sub><sup>n+1</sup> = U<sub>M-1</sub><sup>n+1</sup></span>
+  <span class="mathline"><span class="mathlabel">二阶外推</span> U<sub>M</sub><sup>n+1</sup> = 2U<sub>M-1</sub><sup>n+1</sup> - U<sub>M-2</sub><sup>n+1</sup></span>
+  <span class="mathline"><span class="mathlabel">准特征一阶</span> U<sub>M</sub><sup>n+1</sup> = U<sub>M-1</sub><sup>n</sup></span>
+</div>
+  <p>考试判断：主格式稳定不够，NBC 也可能破坏整体稳定性；upwind 在 outflow 端通常不需要额外 NBC。</p>
+
+  <h3>二阶 wave equation</h3>
+  <p><code>u<sub>tt</sub> = a<sup>2</sup>u<sub>xx</sub></code> 可写为一阶系统，特征速度 ±a；解的依赖域是 <code>[x-at, x+at]</code>。显式中心格式稳定条件通常也是 CFL：<code>ak/h ≤ 1</code>。</p>
+</section>
+
+<section id="code">
+  <h2>6. 编程填空高频行</h2>
+  <p>老师给参考代码时，最可能挖空的是矩阵索引、边界 RHS、迭代更新、稳定参数和误差行。</p>
+  <div class="grid two">
+    <div class="box">
+      <h3>Chap2：two_point / ghost</h3>
+      <pre>h = (b-a)/n; h1 = h*h;
+A(i,i) = -2/h1;
+A(i+1,i) = 1/h1;
+A(i,i+1) = 1/h1;
+F(1) = F(1) - ua/h1;
+F(n-1) = F(n-1) - ub/h1;
+U = A \ F;</pre>
+      <pre>% ghost at right Neumann u_x(b)=uxb
+A(n,n) = -2/h1;
+A(n,n-1) = 2/h1;
+F(n) = F(n) - 2*uxb/h;</pre>
+    </div>
+    <div class="box">
+      <h3>Chap3：Poisson matrix</h3>
+      <pre>k = i + (j-1)*m;
+A(k,k) = -2/hx1 - 2/hy1;
+A(k,k-1) = 1/hx1; A(k,k+1) = 1/hx1;
+A(k,k-m) = 1/hy1; A(k,k+m) = 1/hy1;
+bf(k) = f(x(i), y(j+1));</pre>
+      <pre>% Neumann ghost at x=a in reference code
+A(k,k+1) = 2/hx1;
+bf(k) = bf(k) + 2*ux(y(j+1))/hx;</pre>
+    </div>
+    <div class="box">
+      <h3>Chap3：Jacobi / SOR</h3>
+      <pre>% Jacobi
+u2(i,j) = 0.25*(u1(i-1,j)+u1(i+1,j) ...
+       + u1(i,j-1)+u1(i,j+1)) - h1*f(i,j)/4;</pre>
+      <pre>% SOR
+u2(i,j) = (1-omega)*u1(i,j) + omega*( ...
+       0.25*(u2(i-1,j)+u2(i+1,j)+u2(i,j-1)+u2(i,j+1)) ...
+       - h1*f(i,j)/4 );</pre>
+    </div>
+    <div class="box">
+      <h3>Chap4：Euler / CN</h3>
+      <pre>% Forward Euler heat
+tau = k/h^2;
+y2(i) = y1(i) + tau*(y1(i-1)-2*y1(i)+y1(i+1)) + k*f(t,x(i));</pre>
+      <pre>% CN matrix, 1D
+A(i,i)   = 1/k + 1/h1;
+A(i,i-1) = -0.5/h1;
+A(i,i+1) = -0.5/h1;
+b(i) = u0(i)/k + 0.5*(u0(i-1)-2*u0(i)+u0(i+1))/h1 ...
+       + f(t+0.5*k,x(i));</pre>
+    </div>
+    <div class="box">
+      <h3>Chap4：ADI</h3>
+      <pre>% x-sweep RHS
+b(i-1) = (u1(i,j-1)-2*u1(i,j)+u1(i,j+1))/h1 ...
+       + f(t2,x(i),y(j)) + 2*u1(i,j)/dt;
+A(i-1,i-1) = 2/dt + 2/h1;
+A(i-1,i) = -1/h1; A(i-1,i-2) = -1/h1;
+ut = A \ b;</pre>
+      <p>填空检查：x-sweep 固定 j，解 i；y-sweep 固定 i，解 j。半步边界用 t+dt/2，整步边界用 t+dt。</p>
+    </div>
+    <div class="box">
+      <h3>Chap5：Upwind / LF / LW</h3>
+      <pre>% upwind, a&gt;0
+y2(i) = y1(i) - mu*(y1(i)-y1(i-1));</pre>
+      <pre>% Lax-Friedrichs
+y2(i) = 0.5*(y1(i+1)+y1(i-1)) - mu*(y1(i+1)-y1(i-1))/2;</pre>
+      <pre>% Lax-Wendroff
+y2(i) = y1(i) - mu/2*(y1(i+1)-y1(i-1)) ...
+        + mu^2/2*(y1(i+1)-2*y1(i)+y1(i-1));</pre>
+    </div>
+  </div>
+</section>
+
+<section id="proofs">
+  <h2>7. 证明题答题骨架</h2>
+  <details open>
+    <summary>证明某 scheme consistent</summary>
+    <ol>
+      <li>定义 local truncation error：T = exact solution 代入差分格式后左边减右边。</li>
+      <li>把所有 u(x±h,t±k) 在 (x_i,t_n) Taylor 展开。</li>
+      <li>用 PDE 消去主项，例如 heat 中 u<sub>t</sub>=βu<sub>xx</sub>，advection 中 u<sub>t</sub>=-au<sub>x</sub>。</li>
+      <li>写 T=O(k^p+h^q)。若 p,q 正，则 consistent。</li>
+    </ol>
+  </details>
+  <details open>
+    <summary>证明 Forward Euler heat 稳定</summary>
+    <div class="formula">
+  <span class="mathline">令 U<sub>j</sub><sup>n</sup>=G<sup>n</sup>e<sup>iθj</sup></span>
+  <span class="mathline">G = 1 + μ(e<sup>-iθ</sup>-2+e<sup>iθ</sup>) = 1 - 4μsin<sup>2</sup>(θ/2)</span>
+  <span class="mathline">要求 |G|≤1 对所有 θ：-1 ≤ 1 - 4μsin<sup>2</sup>(θ/2) ≤ 1</span>
+  <span class="mathline">⇒ 0 ≤ μ ≤ 1/2</span>
+</div>
+  </details>
+  <details open>
+    <summary>证明 CN heat 无条件稳定</summary>
+    <div class="formula">
+  <span class="mathline">CN: (I-kβD/2)U<sup>n+1</sup> = (I+kβD/2)U<sup>n</sup></span>
+  <span class="mathline">D 的特征值 λ≤0；每个 mode 的放大因子 G=<span class="frac"><span>1+kβλ/2</span><span>1-kβλ/2</span></span></span>
+  <span class="mathline">λ≤0 ⇒ 分子绝对值不超过分母 ⇒ |G|≤1，所以对任意 k,h 稳定。</span>
+</div>
+  </details>
+  <details open>
+    <summary>判 Lax-Friedrichs 稳定</summary>
+    <div class="formula">
+  <span class="mathline">G = cosθ - iνsinθ</span>
+  <span class="mathline">|G|<sup>2</sup> = cos<sup>2</sup>θ + ν<sup>2</sup>sin<sup>2</sup>θ = 1-(1-ν<sup>2</sup>)sin<sup>2</sup>θ</span>
+  <span class="mathline">要求 |G|≤1 ⇒ |ν|≤1</span>
+</div>
+  </details>
+  <details open>
+    <summary>写 Poisson 矩阵 A</summary>
+    <ol>
+      <li>画格点，标出 unknown 是否包含 Neumann 边界。</li>
+      <li>写 ordering，例如 L=i+(m-1)(j-1)。</li>
+      <li>对每个 unknown 写 <code>left+right+down+up-4center=h<sup>2</sup>f</code>。</li>
+      <li>Dirichlet：已知值移到 RHS；Neumann：先用 ghost relation 消 ghost，再写系数。</li>
+      <li>最后检查每行主对角通常是 -4/h<sup>2</sup>，Neumann 行相邻系数可能是 2/h<sup>2</sup>。</li>
+    </ol>
+  </details>
+</section>
+
+<section id="drill">
+  <h2>8. 考前速背清单</h2>
+  <div class="grid two">
+    <div class="box key">
+      <h3>必须背到能默写</h3>
+      <ul class="checklist">
+        <li>三点中心：u' 二阶，u'' 二阶。</li>
+        <li>local truncation error：exact u 代入，不是 numerical U。</li>
+        <li>1D Dirichlet BVP 三对角矩阵和 RHS 边界修正。</li>
+        <li>Neumann ghost：相邻系数翻倍，RHS 出现 ±2g/h。</li>
+        <li>Poisson 五点矩阵：自然排序、block tridiagonal。</li>
+        <li>Jacobi/GS/SOR 更新式，SOR 中 0&lt;ω&lt;2。</li>
+        <li>Forward Euler heat：μ<=1/2。</li>
+        <li>Backward Euler / CN / ADI：线性 heat 无条件稳定。</li>
+        <li>Upwind/LF/LW：CFL |a|k/h<=1。</li>
+        <li>FTCS advection：不稳定。</li>
+      </ul>
+    </div>
+    <div class="box warn">
+      <h3>常见陷阱</h3>
+      <ul class="checklist">
+        <li>“consistent” 不等于 “convergent”；还缺 stable。</li>
+        <li>中心差分处理强 convection 可能振荡；upwind 更稳但一阶。</li>
+        <li>2D 数组和自然排序别混：MATLAB 里 meshgrid 后 U(row,column)=U(y,x)。</li>
+        <li>CN 的 RHS 也有旧时刻 Laplacian，不只是 U^n。</li>
+        <li>ADI 每半步的边界时间不同，t+dt/2 与 t+dt 要分清。</li>
+        <li>Lax-Friedrichs 的人工粘性让它稳定但更耗散。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sources">
+  <h2>来源与对齐</h2>
+  <p>本讲义根据课程第 2-5 章相关数值方法、作业题型和个人复习整理。</p>
+  <ul>
+    <li>教材：<code>Numerical Solution of Differential Equations...</code>，第2章 1D BVP，第3章 2D elliptic，第4章 parabolic，第5章 hyperbolic。</li>
+    <li>代码：作业中的 MATLAB 数值方法实现与结果复现脚本。</li>
+    <li>作业：Assignment1 非均匀差分/1D BVP/周期边界；Assignment2 Poisson 矩阵和 SOR；Assignment3 heat/CN/MOL/BE；Assignment4 hyperbolic/Lax-Wendroff/ADI vs CN。</li>
+  </ul>
+</section>
+</main>
+</div>
+</body>
+</html>

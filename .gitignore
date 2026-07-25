@@ -1,0 +1,10 @@
+.DS_Store
+*.icloud
+*.asv
+*.mat
+*.eps
+tmp/
+tmp_pdf_render/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

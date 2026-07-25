@@ -1,0 +1,6 @@
+function val = heat4_source(t, x)
+val = -sin(t) .* x.^2 .* sin(pi .* x) ...
+    - cos(t) .* (2 .* sin(pi .* x) + 4 .* pi .* x .* cos(pi .* x) ...
+    - pi^2 .* x.^2 .* sin(pi .* x));
+end
+
